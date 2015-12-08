@@ -21,7 +21,10 @@ namespace Spark.Engine.Core
         public static Uri RemoveBase(this ILocalhost localhost, Uri uri)
         {
             string s = uri.ToString();
-            string _base = localhost.GetBaseOf(uri)?.ToString();
+            var val = localhost.GetBaseOf(uri);
+            string _base = null;
+            if(val != null)
+                _base = val.ToString();
             string path = s.Remove(0, _base == null ? 0 : _base.Length);
             return new Uri(path, UriKind.Relative);
         }
@@ -29,7 +32,10 @@ namespace Spark.Engine.Core
         public static Key LocalUriToKey(this ILocalhost localhost, Uri uri)
         {
             string s = uri.ToString();
-            string _base = localhost.GetBaseOf(uri)?.ToString();
+            string _base = null;
+            var ret = localhost.GetBaseOf(uri);
+            if(ret != null)
+                _base = ret.ToString();
             string path = s.Remove(0, _base == null ? 0 : _base.Length);
 
             return Key.ParseOperationPath(path).WithBase(_base);

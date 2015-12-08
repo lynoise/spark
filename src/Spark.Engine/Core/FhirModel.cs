@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hl7.Fhir.Model;
-using static Hl7.Fhir.Model.ModelInfo;
 using Spark.Engine.Extensions;
 using Hl7.Fhir.Introspection;
 using System.Reflection;
@@ -14,7 +13,7 @@ namespace Spark.Engine.Core
 {
     public class FhirModel : IFhirModel
     {
-        public FhirModel(Dictionary<Type, string> csTypeToFhirTypeNameMapping, IEnumerable<SearchParamDefinition> searchParameters, List<Type> enums)
+        public FhirModel(Dictionary<Type, string> csTypeToFhirTypeNameMapping, IEnumerable<Hl7.Fhir.Model.ModelInfo.SearchParamDefinition> searchParameters, List<Type> enums)
         {
             LoadSearchParameters(searchParameters);
             _csTypeToFhirTypeName = csTypeToFhirTypeNameMapping;
@@ -33,7 +32,7 @@ namespace Spark.Engine.Core
         {
         }
 
-        public FhirModel(Assembly fhirAssembly, IEnumerable<SearchParamDefinition> searchParameters)
+        public FhirModel(Assembly fhirAssembly, IEnumerable<Hl7.Fhir.Model.ModelInfo.SearchParamDefinition> searchParameters)
         {
             LoadSearchParameters(searchParameters);
             LoadAssembly(fhirAssembly);
@@ -79,12 +78,12 @@ namespace Spark.Engine.Core
             }
         }
 
-        private void LoadSearchParameters(IEnumerable<SearchParamDefinition> searchParameters)
+        private void LoadSearchParameters(IEnumerable<Hl7.Fhir.Model.ModelInfo.SearchParamDefinition> searchParameters)
         {
             _searchParameters = searchParameters.Select(sp => createSearchParameterFromSearchParamDefinition(sp));
         }
 
-        private SearchParameter createSearchParameterFromSearchParamDefinition(SearchParamDefinition def)
+        private SearchParameter createSearchParameterFromSearchParamDefinition(Hl7.Fhir.Model.ModelInfo.SearchParamDefinition def)
         {
             var result = new SearchParameter();
             result.Name = def.Name;
@@ -131,7 +130,7 @@ namespace Spark.Engine.Core
 
         public Type GetTypeForResourceName(string name)
         {
-            return FhirTypeToCsType[name];
+            return Hl7.Fhir.Model.ModelInfo.FhirTypeToCsType[name];
         }
 
         public ResourceType GetResourceTypeForResourceName(string name)
@@ -166,7 +165,11 @@ namespace Spark.Engine.Core
 
         public string GetLiteralForEnum(Enum value)
         {
-            return _enumMappings.FirstOrDefault(em => em.EnumType == value.GetType())?.GetLiteral(value);
+            var ret = _enumMappings.FirstOrDefault(em => em.EnumType == value.GetType());
+            if (ret == null)
+                return null;
+            else
+                return ret.GetLiteral(value);
         }
     }
 }

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using Spark.Engine.Search;
 using Spark.Engine.Model;
 using Spark.Search;
-using static Hl7.Fhir.Model.ModelInfo;
 
 namespace Spark.Engine.Test.Service
 {
@@ -25,8 +24,8 @@ namespace Spark.Engine.Test.Service
         [TestInitialize]
         public void TestInitialize()
         {
-            var spPatientName = new SearchParamDefinition() { Resource = "Patient", Name = "name", Description = @"A portion of either family or given name of the patient", Type = SearchParamType.String, Path = new string[] { "Patient.name", } };
-            var searchParameters = new List<SearchParamDefinition> { spPatientName };
+            var spPatientName = new Hl7.Fhir.Model.ModelInfo.SearchParamDefinition() { Resource = "Patient", Name = "name", Description = @"A portion of either family or given name of the patient", Type = SearchParamType.String, Path = new string[] { "Patient.name", } };
+            var searchParameters = new List<Hl7.Fhir.Model.ModelInfo.SearchParamDefinition> { spPatientName };
             var resources = new Dictionary<Type, string> { { typeof(Patient), "Patient" }, { typeof(HumanName), "HumanName" } };
             var enums = new List<Type>();
             //CK: I use real objects: saves me a lot of mocking and provides for a bit of integration testing.

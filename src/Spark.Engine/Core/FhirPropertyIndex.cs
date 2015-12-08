@@ -25,7 +25,11 @@ namespace Spark.Engine.Core
         public FhirPropertyIndex(IFhirModel fhirModel, IEnumerable<Type> supportedFhirTypes) //Hint: supply all Resource and Element types from an assembly
         {
             _fhirModel = fhirModel;
-            _fhirTypeInfoList = supportedFhirTypes?.Select(sr => CreateFhirTypeInfo(sr)).ToList();
+            if (supportedFhirTypes == null)
+                _fhirTypeInfoList = null;
+            else
+                _fhirTypeInfoList = supportedFhirTypes.Select(sr => CreateFhirTypeInfo(sr)).ToList();
+
         }
 
         private IFhirModel _fhirModel;
@@ -33,12 +37,17 @@ namespace Spark.Engine.Core
 
         internal FhirTypeInfo findFhirTypeInfo(Predicate<FhirTypeInfo> typePredicate)
         {
-            return findFhirTypeInfos(typePredicate)?.FirstOrDefault();
+            var ret = findFhirTypeInfos(typePredicate);
+            if (ret != null)
+                return findFhirTypeInfos(typePredicate).FirstOrDefault();
+            return null;
         }
 
         internal IEnumerable<FhirTypeInfo> findFhirTypeInfos(Predicate<FhirTypeInfo> typePredicate)
         {
-            return _fhirTypeInfoList?.Where(fti => typePredicate(fti));
+            if(_fhirTypeInfoList == null)
+                return null;
+            return _fhirTypeInfoList.Where(fti => typePredicate(fti));
         }
 
         /// <summary>
@@ -50,9 +59,12 @@ namespace Spark.Engine.Core
         /// <returns>FhirPropertyInfo for the specified property. Null if not present.</returns>
         public FhirPropertyInfo findPropertyInfo(string resourceTypeName, string propertyName)
         {
-            return findFhirTypeInfo(
-                new Predicate<FhirTypeInfo>(r => r.TypeName == resourceTypeName))?
-                .findPropertyInfo(propertyName);
+            
+            var ret = findFhirTypeInfo(new Predicate<FhirTypeInfo>(r => r.TypeName == resourceTypeName));
+            if(ret == null)
+                return null;
+            return ret.findPropertyInfo(propertyName);
+
         }
 
         /// <summary>
@@ -64,9 +76,10 @@ namespace Spark.Engine.Core
         /// <returns><see cref="FhirPropertyInfo"/> for the specified property. Null if not present.</returns>
         public FhirPropertyInfo findPropertyInfo(Type fhirType, string propertyName)
         {
-            return findFhirTypeInfo(new Predicate
-                <FhirTypeInfo>(r => r.FhirType == fhirType))?
-                .findPropertyInfo(propertyName);
+            var ret = findFhirTypeInfo(new Predicate<FhirTypeInfo>(r => r.FhirType == fhirType));
+            if(ret != null)
+                return ret.findPropertyInfo(propertyName);
+            return null;
         }
 
         /// <summary>
@@ -96,7 +109,10 @@ namespace Spark.Engine.Core
         /// <returns></returns>
         public IEnumerable<FhirPropertyInfo> findPropertyInfos(Predicate<FhirTypeInfo> typePredicate, Predicate<FhirPropertyInfo> propertyPredicate)
         {
-            return findFhirTypeInfos(typePredicate)?.SelectMany(fti => fti.findPropertyInfos(propertyPredicate));
+            var ret = findFhirTypeInfos(typePredicate);
+            if(ret != null)
+                return ret.SelectMany(fti => fti.findPropertyInfos(propertyPredicate));
+            return  null;
         }
 
         /// <summary>
@@ -110,7 +126,10 @@ namespace Spark.Engine.Core
         /// <returns></returns>
         public FhirPropertyInfo findPropertyInfo(Predicate<FhirTypeInfo> typePredicate, Predicate<FhirPropertyInfo> propertyPredicate)
         {
-            return findPropertyInfos(typePredicate, propertyPredicate)?.FirstOrDefault();
+            var ret = findPropertyInfos(typePredicate, propertyPredicate);
+            if(ret != null)
+                return ret.FirstOrDefault();
+            return null;
         }
 
         //CK: Function to create FhirTypeInfo instead of putting this knowledge in the FhirTypeInfo constructor, 
@@ -198,7 +217,9 @@ namespace Spark.Engine.Core
 
         public IEnumerable<FhirPropertyInfo> findPropertyInfos(Predicate<FhirPropertyInfo> propertyPredicate)
         {
-            return properties?.Where(pi => propertyPredicate(pi));
+            if (properties != null)
+                return properties.Where(pi => propertyPredicate(pi));
+            return null;
         }
 
         /// <summary>
@@ -219,7 +240,8 @@ namespace Spark.Engine.Core
             {
                 preferredMatches = allMatches;
             }
-            return preferredMatches?.FirstOrDefault();
+
+            return preferredMatches==null?null:preferredMatches.FirstOrDefault();
         }
 
         /// <summary>
