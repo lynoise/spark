@@ -164,7 +164,15 @@ namespace Spark.Engine.Core
                 throw new ArgumentNullException("type");
             }
 
-            bool? codedEnum = type.GenericTypeArguments?.FirstOrDefault()?.IsEnum;
+            bool? codedEnum = null;
+            if (type.GenericTypeArguments != null)
+            {
+                var first = type.GenericTypeArguments.FirstOrDefault();
+                if (first != null)
+                {
+                    codedEnum = first.IsEnum;
+                }
+            }
             if (codedEnum.HasValue && codedEnum.Value)
             {
                 return true;

@@ -102,7 +102,8 @@ namespace Spark.Engine.Service
             entry.Values.Add(new IndexValue(IndexFieldNames.RESOURCE, new StringValue(resource.TypeName)));
             entry.Values.Add(new IndexValue(IndexFieldNames.ID, new StringValue(resource.TypeName + "/" + resource.Id)));
             entry.Values.Add(new IndexValue(IndexFieldNames.SELFLINK, new StringValue(key.ToUriString())));
-            var fdt = resource.Meta?.LastUpdated != null ? new FhirDateTime(resource.Meta.LastUpdated.Value) : FhirDateTime.Now();
+
+            var fdt = (resource.Meta != null && resource.Meta.LastUpdated != null) ? new FhirDateTime(resource.Meta.LastUpdated.Value) : FhirDateTime.Now();
             entry.Values.Add(new IndexValue(IndexFieldNames.LASTUPDATED, (_elementIndexer.Map(fdt))));
         }
 
