@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Spark.HIS.Security;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
@@ -9,6 +10,9 @@ namespace Spark
     {
         public static void Register(HttpConfiguration config)
         {
+            GlobalConfiguration.Configuration.MessageHandlers.Add(new STSAuthenticationHandler());
+            GlobalConfiguration.Configuration.Filters.Add(new STSAuthorizationFilter());
+            
             // Web API configuration and services
 
             // Web API routes
@@ -19,6 +23,8 @@ namespace Spark
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+
         }
     }
 }

@@ -257,6 +257,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="HIS\Security\STSAuthorizationFilter.cs" />
+    <Compile Include="HIS\Security\STSAuthenticationHandler.cs" />
+    <Compile Include="HIS\Security\STSAuthenticationIdentity.cs" />
     <Compile Include="Hubs\Examples.cs" />
     <Compile Include="Hubs\FhirLoader.cs" />
     <Compile Include="Hubs\InitializerHub.cs" />
